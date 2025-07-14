@@ -16,27 +16,44 @@
 </head>
 
 <body>
-    <div class="header">
+    <header class="header">
         <h1>3D Solar System Simulation</h1>
         </p>
-    </div>
+    </header>
 
     <div class="container">
-        <div class="simulation-container" id="canvas-container"></div>
-
-        <div class="controls-container">
-            <div>
-                <div class="playback-controls">
-                    <button id="pause-btn" class="control-btn">Pause Simulation</button>
-                    <button id="play-btn" class="control-btn" style="display: none;">Resume Simulation</button>
+        <div class="main-content">
+            <div id="canvas-container">
+                <div class="status-bar">
+                    <div class="status-indicator" id="status-indicator"></div>
+                    <span id="status-text">Simulation Running</span>
                 </div>
             </div>
-
-            <div>
-                <h3 class="speed-h">Planet Speed Controls</h3>
-                <form id="speed-form"></form>
+            <div class="controls compact-controls">
+                <div class="flex-row">
+                    <div class="control-section">
+                        <h2>Simulation</h2>
+                        <div class="button-group">
+                            <button id="play-btn">▶</button>
+                            <button id="pause-btn">⏸</button>
+                            <button id="reset-btn">↺</button>
+                        </div>
+                    </div>
+                    <div class="control-section">
+                        <h2>View</h2>
+                        <div class="button-group">
+                            <button id="top-view">Top</button>
+                            <button id="side-view">Side</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <h2>Planet Speed</h2>
+                    <form id="speed-form"></form>
+                </div>
             </div>
         </div>
+        <div class="planet-label" id="planet-label"></div>
     </div>
 
     <div class="footer">

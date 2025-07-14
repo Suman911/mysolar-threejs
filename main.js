@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-// Planet Data
 const PLANETS = [
     { name: "Mercury", color: 0xa9a9a9, size: 1.6, orbitRadius: 18, speed: 0.7 },
     { name: "Venus", color: 0xf5deb3, size: 2.9, orbitRadius: 25, speed: 0.5 },
@@ -13,7 +12,7 @@ const PLANETS = [
 ];
 
 // Sun Data
-const SUN = { color: 0xfce300, size: 10 };
+const SUN = { color: 0xffc400, size: 10 };
 
 // Setup Three.js Scene
 const container = document.getElementById('canvas-container');
@@ -21,12 +20,12 @@ const scene = new THREE.Scene();
 
 // Add subtle starry background
 scene.background = new THREE.Color(0x101022);
-function addStars(n = 800) {
+function addStars(n = 1000) {
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
     for (let i = 0; i < n; i++) {
         const x = THREE.MathUtils.randFloatSpread(320);
-        const y = THREE.MathUtils.randFloatSpread(200);
+        const y = THREE.MathUtils.randFloatSpread(200) + 30;
         const z = THREE.MathUtils.randFloatSpread(320);
         vertices.push(x, y, z);
     }
@@ -49,7 +48,7 @@ const camera = new THREE.PerspectiveCamera(
     0.5,
     300
 );
-camera.position.set(0, 40, 125);
+camera.position.set(0, 45, 135);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -72,8 +71,8 @@ window.addEventListener('resize', () => {
 });
 
 // LIGHTING - Enhanced lighting setup
-const sunLight = new THREE.PointLight(SUN.color, 50, 1000);
-sunLight.position.set(0, 25, 0);
+const sunLight = new THREE.PointLight(SUN.color, 75, 1000);
+sunLight.position.set(0, 30, 0);
 sunLight.decay = 0.8; // Reduced decay
 scene.add(sunLight);
 
@@ -87,12 +86,13 @@ const sunMaterial = new THREE.MeshBasicMaterial({
     color: SUN.color
 });
 const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
-sunMesh.position.set(0, 25, 0);
+sunMesh.position.set(0, 30, 0);
 scene.add(sunMesh);
 
 // PLANETS - Enhanced visibility
 const planetMeshes = [];
 const orbitAngles = [];
+const initialOrbitAngles = [];
 
 // Create a ring for Saturn
 const saturnRingGeometry = new THREE.RingGeometry(8, 10, 64);
@@ -116,17 +116,18 @@ PLANETS.forEach((planet, i) => {
         metalness: 0.5, // Reduced metalness for better visibility
         flatShading: false
     });
-    
+
     const mesh = new THREE.Mesh(geometry, material);
 
     // Initial position
     const angle = Math.random() * Math.PI * 2;
     mesh.position.set(
         Math.cos(angle) * planet.orbitRadius,
-        25,
+        30,
         Math.sin(angle) * planet.orbitRadius
     );
     orbitAngles.push(angle);
+    initialOrbitAngles.push(angle);
 
     // Add planet to scene
     scene.add(mesh);
@@ -149,7 +150,7 @@ PLANETS.forEach((planet, i) => {
         side: THREE.DoubleSide
     });
     const ring = new THREE.Mesh(orbitGeometry, orbitMaterial);
-    ring.position.set(0, 25, 0);
+    ring.position.set(0, 30, 0);
     ring.rotation.x = Math.PI / 2;
     scene.add(ring);
 });
@@ -188,6 +189,12 @@ PLANETS.forEach((planet, idx) => {
     number.value = planet.speed;
     number.id = `number-${idx}`;
 
+    // Layout
+    const sliderRow = document.createElement('div');
+    sliderRow.className = 'slider-row';
+    sliderRow.appendChild(slider);
+    sliderRow.appendChild(number);
+
     // Sync slider/number
     slider.addEventListener('input', () => {
         number.value = slider.value;
@@ -200,10 +207,9 @@ PLANETS.forEach((planet, idx) => {
         number.value = val;
     });
 
-    // Layout
+    // Append elements
     controlDiv.appendChild(label);
-    controlDiv.appendChild(slider);
-    controlDiv.appendChild(number);
+    controlDiv.appendChild(sliderRow);
     speedForm.appendChild(controlDiv);
 });
 
@@ -211,31 +217,103 @@ PLANETS.forEach((planet, idx) => {
 let paused = false;
 const pauseBtn = document.getElementById('pause-btn');
 const playBtn = document.getElementById('play-btn');
+const resetBtn = document.getElementById('reset-btn');
+const topViewBtn = document.getElementById('top-view');
+const sideViewBtn = document.getElementById('side-view');
+const statusText = document.getElementById('status-text');
+const statusIndicator = document.getElementById('status-indicator');
+
+// Update status display
+function updateStatus() {
+    if (paused) {
+        statusText.textContent = "Simulation Paused";
+        statusIndicator.className = "status-indicator paused";
+    } else {
+        statusText.textContent = "Simulation Running";
+        statusIndicator.className = "status-indicator";
+    }
+}
 
 pauseBtn.addEventListener('click', () => {
     paused = true;
-    pauseBtn.style.display = 'none';
-    playBtn.style.display = '';
+    updateStatus();
+    pauseBtn.style.display = "none";
+    playBtn.style.display = "inline-block";
 });
 playBtn.addEventListener('click', () => {
     paused = false;
-    playBtn.style.display = 'none';
-    pauseBtn.style.display = '';
+    updateStatus();
+    playBtn.style.display = "none";
+    pauseBtn.style.display = "inline-block";
+});
+
+resetBtn.addEventListener('click', () => {
+    // Reset all planets to initial positions
+    PLANETS.forEach((planet, idx) => {
+        orbitAngles[idx] = initialOrbitAngles[idx];
+        const mesh = planetMeshes[idx];
+        mesh.position.x = Math.cos(orbitAngles[idx]) * planet.orbitRadius;
+        mesh.position.y = 30;
+        mesh.position.z = Math.sin(orbitAngles[idx]) * planet.orbitRadius;
+
+        // Reset Saturn's ring
+        if (planet.name === "Saturn") {
+            saturnRing.position.copy(mesh.position);
+        }
+    });
+});
+
+// Camera views
+topViewBtn.addEventListener('click', () => {
+    gsap.to(camera.position, {
+        x: 0,
+        y: 200,
+        z: 0,
+        duration: 1.5,
+        ease: "power2.inOut"
+    });
+    gsap.to(camera.rotation, {
+        x: -Math.PI / 2,
+        duration: 1.5,
+        ease: "power2.inOut"
+    });
+    topViewBtn.style.display = "none";
+    sideViewBtn.style.display = "inline-block";
+});
+
+sideViewBtn.addEventListener('click', () => {
+    gsap.to(camera.position, {
+        x: 0,
+        y: 45,
+        z: 135,
+        duration: 1.5,
+        ease: "power2.inOut"
+    });
+    gsap.to(camera.rotation, {
+        x: 0,
+        duration: 1.5,
+        ease: "power2.inOut"
+    });
+    sideViewBtn.style.display = "none";
+    topViewBtn.style.display = "inline-block";
 });
 
 // Animation Loop
-const clock = new THREE.Clock();
-function animate() {
+let lastTime = 0;
+function animate(timestamp) {
     requestAnimationFrame(animate);
+
+    // Calculate delta time
+    const deltaTime = paused ? 0 : (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
 
     if (!paused) {
         // Animate planets
-        const dt = clock.getDelta();
         PLANETS.forEach((planet, idx) => {
-            orbitAngles[idx] += dt * planet.speed * 0.7;
+            orbitAngles[idx] += deltaTime * planet.speed * 0.7;
             const mesh = planetMeshes[idx];
             mesh.position.x = Math.cos(orbitAngles[idx]) * planet.orbitRadius;
-            mesh.position.y = 25; // Fixed height for better visibility
+            mesh.position.y = 30;
             mesh.position.z = Math.sin(orbitAngles[idx]) * planet.orbitRadius;
 
             // Update Saturn's ring position
@@ -247,7 +325,8 @@ function animate() {
 
     renderer.render(scene, camera);
 }
-animate();
+animate(0);
+updateStatus();
 
 // Accessibility: Keyboard navigation for sliders
 speedForm.querySelectorAll('input[type="range"]').forEach(slider => {
@@ -258,9 +337,13 @@ speedForm.querySelectorAll('input[type="range"]').forEach(slider => {
     });
 });
 
-// Tooltips on hover
+// Planet labels
+const planetLabel = document.getElementById('planet-label');
 planetMeshes.forEach((mesh, idx) => {
-    mesh.userData.planetIdx = idx;
+    mesh.userData = {
+        planetIdx: idx,
+        name: PLANETS[idx].name
+    };
 });
 
 renderer.domElement.addEventListener('mousemove', function (e) {
@@ -271,34 +354,15 @@ renderer.domElement.addEventListener('mousemove', function (e) {
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetMeshes);
-    const tooltipId = 'planet-tooltip';
-    let tooltip = document.getElementById(tooltipId);
 
     if (intersects.length > 0) {
-        const idx = intersects[0].object.userData.planetIdx;
-        const planet = PLANETS[idx];
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.id = tooltipId;
-            tooltip.style.position = 'fixed';
-            tooltip.style.pointerEvents = 'none';
-            tooltip.style.background = '#222b';
-            tooltip.style.color = '#ffe066';
-            tooltip.style.padding = '8px 16px';
-            tooltip.style.borderRadius = '8px';
-            tooltip.style.fontSize = '1.1em';
-            tooltip.style.fontWeight = 'bold';
-            tooltip.style.zIndex = 100;
-            tooltip.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-            tooltip.style.border = '1px solid rgba(255, 224, 102, 0.3)';
-            document.body.appendChild(tooltip);
-        }
-        tooltip.textContent = planet.name;
-        tooltip.style.left = (e.clientX + 20) + 'px';
-        tooltip.style.top = (e.clientY - 5) + 'px';
-        tooltip.style.display = 'block';
-    } else if (tooltip) {
-        tooltip.style.display = 'none';
+        const planetName = intersects[0].object.userData.name;
+        planetLabel.textContent = planetName;
+        planetLabel.style.opacity = "1";
+        planetLabel.style.left = `${e.clientX + 20}px`;
+        planetLabel.style.top = `${e.clientY - 10}px`;
+    } else {
+        planetLabel.style.opacity = "0";
     }
 });
 
@@ -344,3 +408,14 @@ document.addEventListener('mouseup', function () {
 function toRadians(angle) {
     return angle * (Math.PI / 180);
 }
+
+// Add GSAP for smooth camera animations
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js';
+document.head.appendChild(script);
+
+// Initialize button visibility on load
+pauseBtn.style.display = "inline-block";
+playBtn.style.display = "none";
+topViewBtn.style.display = "inline-block";
+sideViewBtn.style.display = "none";
