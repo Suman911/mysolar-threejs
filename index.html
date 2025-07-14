@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Solar System Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.178.0/build/three.module.js"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>3D Solar System Simulation</h1>
+        </p>
+    </div>
+
+    <div class="container">
+        <div class="simulation-container" id="canvas-container"></div>
+
+        <div class="controls-container">
+            <div>
+                <div class="playback-controls">
+                    <button id="pause-btn" class="control-btn">Pause Simulation</button>
+                    <button id="play-btn" class="control-btn" style="display: none;">Resume Simulation</button>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="speed-h">Planet Speed Controls</h3>
+                <form id="speed-form"></form>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Created with Three.js | Solar System Simulation</p>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+
+</html>

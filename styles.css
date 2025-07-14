@@ -1,0 +1,218 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #f0f0f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.header {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #ffe066, #ff9a3c, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #a0d2eb;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 1rem;
+    gap: 2rem;
+}
+
+.simulation-container {
+    flex: 1;
+    min-width: 600px;
+    height: 75vh;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    background: rgba(10, 15, 30, 0.7);
+    position: relative;
+}
+
+.controls-container {
+    width: 350px;
+    background: rgba(20, 25, 45, 0.8);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(100, 150, 255, 0.15);
+}
+
+.speed-h {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #ffe066;
+    text-align: center;
+    position: relative;
+}
+
+.panel-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #ffe066;
+    text-align: center;
+    position: relative;
+}
+
+.panel-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #ff9a3c, #ff6b6b);
+    margin: 0.5rem auto 0;
+    border-radius: 3px;
+}
+
+.control-group {
+    margin-bottom: .5rem;
+    padding-bottom: .5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+    color: #a0d2eb;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: rgba(100, 150, 255, 0.2);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffe066;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(255, 224, 102, 0.5);
+}
+
+input[type="number"] {
+    width: 70px;
+    padding: 0.4rem 0.5rem;
+    background: rgba(10, 20, 40, 0.6);
+    border: 1px solid rgba(100, 150, 255, 0.3);
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+}
+
+.playback-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(to right, #3498db, #2c3e50);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.control-btn:active {
+    transform: translateY(0);
+}
+
+#pause-btn {
+    background: linear-gradient(to right, #ff9a3c, #ff6b6b);
+}
+
+.info-panel {
+    margin-top: 2rem;
+    background: rgba(15, 30, 50, 0.7);
+    padding: 1.2rem;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.info-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+    color: #ffe066;
+}
+
+.info-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #c5d9e8;
+}
+
+.footer {
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    color: #a0d2eb;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 1100px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .simulation-container {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .controls-container {
+        width: 100%;
+        max-width: 600px;
+    }
+}
